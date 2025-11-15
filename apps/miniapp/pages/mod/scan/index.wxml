@@ -1,0 +1,7 @@
+<view class="container">
+  <button type="primary" bindtap="onScan">Scan</button>
+  <block wx:if="{{scanResult}}">
+    <text wx:if="{{scanResult.ok}}">OK: expires {{scanResult.valid_until}}, domain: {{scanResult.email_domain}}</text>
+    <text wx:if="{{!scanResult.ok}}">Not verified</text>
+  </block>
+</view>

@@ -1,0 +1,6 @@
+<view class="container">
+  <view class="form">
+    <input class="input" type="text" placeholder="{{t('email_prompt')}}" value="{{email}}" bindinput="onEmailInput" />
+    <button type="primary" loading="{{sending}}" bindtap="sendCode">{{t('send_code')}}</button>
+  </view>
+</view>

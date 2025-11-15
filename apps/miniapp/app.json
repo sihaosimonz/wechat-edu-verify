@@ -1,0 +1,20 @@
+{
+  "pages": [
+    "pages/start/index",
+    "pages/verify/email",
+    "pages/verify/otp",
+    "pages/join/index",
+    "pages/profile/index",
+    "pages/org/dashboard",
+    "pages/org/group-edit",
+    "pages/mod/scan"
+  ],
+  "window": {
+    "navigationBarTitleText": "Verify"
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "your location information is used to show your position on the map"
+    }
+  }
+}

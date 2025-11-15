@@ -1,0 +1,26 @@
+# Node / TypeScript
+node_modules/
+dist/
+build/
+coverage/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment & secrets
+.env
+.env.*
+apps/api/env/.env
+apps/jobs/env/.env
+
+# WeChat Mini Program build output
+miniprogram_npm/
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Misc
+*.log

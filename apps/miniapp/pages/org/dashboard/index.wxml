@@ -1,0 +1,4 @@
+<view class="container">
+  <text>{{t('loading')}}</text>
+  <!-- TODO: organizer dashboard content -->
+</view>

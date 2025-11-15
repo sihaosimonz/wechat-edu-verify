@@ -1,0 +1,14 @@
+.container {
+  padding: 24rpx;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+.input {
+  border: 1px solid #ddd;
+  border-radius: 8rpx;
+  padding: 16rpx;
+  font-size: 28rpx;
+}

@@ -1,0 +1,4 @@
+<view class="container">
+  <text class="title">{{t('welcome')}}</text>
+  <button type="primary" bindtap="goToEmail">{{t('send_code')}}</button>
+</view>

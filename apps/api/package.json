@@ -1,0 +1,27 @@
+{
+  "name": "wechat-verify-api",
+  "version": "1.0.0",
+  "description": "Verification service for WeChat group access via email OTP.",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts"
+  },
+  "dependencies": {
+    "@fastify/cors": "^8.2.0",
+    "fastify": "^4.22.2",
+    "argon2": "^0.31.2",
+    "jsonwebtoken": "^9.0.1",
+    "nodemailer": "^6.9.7",
+    "prom-client": "^15.1.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.1.6",
+    "@types/node": "^20.4.2",
+    "@types/jsonwebtoken": "^9.0.1",
+    "@types/nodemailer": "^6.9.7",
+    "@types/uuid": "^9.0.0"
+  }
+}

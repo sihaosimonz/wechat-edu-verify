@@ -1,0 +1,23 @@
+<view class="container">
+  <block wx:if="{{loading}}">
+    <text>{{t('loading')}}</text>
+  </block>
+  <block wx:elif="{{status === 'unverified'}}">
+    <text>{{t('not_verified')}}</text>
+    <button type="primary" bindtap="reverify">{{t('reverify')}}</button>
+  </block>
+  <block wx:elif="{{status === 'verified'}}">
+    <view class="info">
+      <text>{{t('verified_until')}}: {{validUntil}}</text>
+      <text>Email: *{{emailDomain}}</text>
+    </view>
+    <view class="actions">
+      <button size="mini" type="primary" bindtap="generateQrToken">{{t('scan_token')}}</button>
+      <button size="mini" bindtap="revokeVerification">{{t('revoke')}}</button>
+      <button size="mini" bindtap="deleteData">{{t('delete_data')}}</button>
+    </view>
+    <view wx:if="{{qrToken}}" class="qr-token">
+      <text selectable="true">{{qrToken}}</text>
+    </view>
+  </block>
+</view>
