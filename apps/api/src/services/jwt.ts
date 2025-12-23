@@ -1,5 +1,5 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { randomUUID } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { generateKeyPairSync, createPublicKey } from 'crypto';
 import fs from 'fs';
 import path from 'path';
@@ -95,7 +95,7 @@ function ensureKey() {
       publicKeyEncoding: { type: 'spki', format: 'pem' },
       privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
     });
-    signingKeys.unshift({ kid: randomUUID(), privateKey, publicKey, createdAt: Date.now(), retiring: false });
+    signingKeys.unshift({ kid: uuidv4(), privateKey, publicKey, createdAt: Date.now(), retiring: false });
     persistKeysToFile();
   }
 }
@@ -119,7 +119,7 @@ export function rotateSigningKey() {
     publicKeyEncoding: { type: 'spki', format: 'pem' },
     privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
   });
-  signingKeys.unshift({ kid: randomUUID(), privateKey, publicKey, createdAt: Date.now(), retiring: false });
+  signingKeys.unshift({ kid: uuidv4(), privateKey, publicKey, createdAt: Date.now(), retiring: false });
   // Persist updated keys to file
   persistKeysToFile();
 }
@@ -131,7 +131,7 @@ export function rotateSigningKey() {
 export function issueVerificationToken(userId: string, email: string, openid: string, lifetimeSeconds: number): string {
   ensureKey();
   const now = Math.floor(Date.now() / 1000);
-  const jti = randomUUID();
+  const jti = uuidv4();
   const payload: VerificationTokenPayload = {
     sub: userId,
     email,
@@ -146,7 +146,7 @@ export function issueVerificationToken(userId: string, email: string, openid: st
   const activeKey = signingKeys[0];
   return jwt.sign(payload, activeKey.privateKey, {
     algorithm: 'RS256',
-    header: { kid: activeKey.kid }
+    keyid: activeKey.kid,
   });
 }
 
