@@ -1,13 +1,13 @@
 {
   "pages": [
     "pages/start/index",
-    "pages/verify/email",
-    "pages/verify/otp",
+    "pages/verify/email/index",
+    "pages/verify/otp/index",
     "pages/join/index",
     "pages/profile/index",
-    "pages/org/dashboard",
-    "pages/org/group-edit",
-    "pages/mod/scan"
+    "pages/org/dashboard/index",
+    "pages/org/group-edit/index",
+    "pages/mod/scan/index"
   ],
   "window": {
     "navigationBarTitleText": "Verify"
