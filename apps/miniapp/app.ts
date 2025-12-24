@@ -3,7 +3,7 @@ App<IAppOption>({
   onLaunch() {
     // Perform WeChat login on launch to obtain a session token from the API.
     wx.login({
-      success: async (res) => {
+      success: async (res: WechatMiniprogram.LoginSuccessCallbackResult) => {
         if (res.code) {
           try {
             const resp = await wx.request({
