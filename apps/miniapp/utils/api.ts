@@ -13,32 +13,55 @@ function getVerificationToken(): string | null {
   return wx.getStorageSync('verification_token') || null;
 }
 
-export function apiRequest<T>({ url, method = 'GET', data, headers: customHeaders = {} }: { url: string; method?: 'GET' | 'POST' | 'DELETE'; data?: any; headers?: Record<string, string>; }): Promise<T> {
+type ApiRequestOptions = {
+  url: string;
+  method?: WechatMiniprogram.RequestOption['method'];
+  data?: Record<string, any>;
+  headers?: Record<string, string>;
+};
+
+function buildAuthHeader(path: string): string | null {
+  const verificationToken = getVerificationToken();
+  const sessionToken = getSessionToken();
+
+  if (verificationToken && path.startsWith('/groups/')) {
+    return `Bearer ${verificationToken}`;
+  }
+
+  if (sessionToken) {
+    return `Bearer ${sessionToken}`;
+  }
+
+  return null;
+}
+
+// converting callback to promise style
+export function apiRequest<T = any>(options: ApiRequestOptions): Promise<T> {
+  const url = options.url.startsWith('http') ? options.url : `${BASE_URL}${options.url}`;
+  const authHeader = buildAuthHeader(options.url);
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...options.headers
+  };
+
+  if (authHeader && !headers.Authorization && !headers.authorization) {
+    headers.Authorization = authHeader;
+  }
+
   return new Promise((resolve, reject) => {
-    const headers: any = { 'Content-Type': 'application/json', ...customHeaders };
-    const sessionToken = getSessionToken();
-    const verificationToken = getVerificationToken();
-    // Prefer session token; use verification token for join/invite requests and scan tokens
-    if (url.includes('/groups/') || url.includes('/verify/qr-token') || url.includes('/moderation/')) {
-      if (verificationToken) {
-        headers['Authorization'] = `Bearer ${verificationToken}`;
-      }
-    } else if (sessionToken) {
-      headers['Authorization'] = `Bearer ${sessionToken}`;
-    }
     wx.request({
-      url: BASE_URL + url,
-      method: method as any,
-      data,
+      url,
+      method: options.method || 'GET',
+      data: options.data,
       header: headers,
-      success(res) {
-        if (res.statusCode >= 200 && res.statusCode < 300) {
-          resolve(res.data as T);
-        } else {
-          reject(res.data);
+      success: (resp: WechatMiniprogram.RequestSuccessCallbackResult) => {
+        if (resp.statusCode >= 200 && resp.statusCode < 300) {
+          resolve(resp.data as T);
+          return;
         }
+        reject(resp.data || { error: `Request failed with status ${resp.statusCode}` });
       },
-      fail(err) {
+      fail: (err: any) => {
         reject(err);
       }
     });
