@@ -1,4 +1,6 @@
+<!-- Text display -->
+
 <view class="container">
-  <text class="title">{{t('welcome')}}</text>
-  <button type="primary" bindtap="goToEmail">{{t('send_code')}}</button>
+  <text class="title">Welcome to Student Verify</text>
+  <button type="primary" bindtap="goToEmail">Verify Email</button>
 </view>

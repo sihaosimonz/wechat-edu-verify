@@ -26,5 +26,4 @@ Thumbs.db
 *.log
 
 # WeChat DevTools TS build output for pages
-apps/miniapp/pages/**/index.js
-apps/miniapp/pages/**/index.js.map
+apps/miniapp/pages/**/*.bak
