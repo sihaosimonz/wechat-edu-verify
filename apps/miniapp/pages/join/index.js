@@ -1,66 +1,70 @@
-// pages/join/index.js
+const { t } = require('../../utils/i18n');
+const { apiRequest } = require('../../utils/api');
+
 Page({
-
-  /**
-   * Page initial data
-   */
   data: {
-
+    groupId: '',
+    invite: null,
+    status: 'loading',
+    t,
+    loadingInvite: false,
+    validUntil: ''
   },
 
-  /**
-   * Lifecycle function--Called when page load
-   */
-  onLoad(options) {
-
+  onLoad() {
+    this.checkStatus();
   },
 
-  /**
-   * Lifecycle function--Called when page is initially rendered
-   */
-  onReady() {
-
+  async checkStatus() {
+    try {
+      const res = await apiRequest({ url: '/verify/status', method: 'GET' });
+      if (res.status === 'verified') {
+        this.setData({ status: 'verified', validUntil: res.valid_until });
+      } else {
+        this.setData({ status: 'unverified' });
+      }
+    } catch (e) {
+      this.setData({ status: 'unverified' });
+    }
   },
 
-  /**
-   * Lifecycle function--Called when page show
-   */
-  onShow() {
-
+  onGroupIdInput(e) {
+    this.setData({ groupId: e.detail.value });
   },
 
-  /**
-   * Lifecycle function--Called when page hide
-   */
-  onHide() {
+  async fetchInvite() {
+    const groupId = (this.data.groupId || '').trim();
+    if (!groupId) {
+      wx.showToast({ title: t('enter_group_id'), icon: 'none' });
+      return;
+    }
 
+    this.setData({ loadingInvite: true });
+
+    try {
+      const invite = await apiRequest({
+        url: `/groups/${groupId}/invite`,
+        method: 'GET'
+      });
+      this.setData({ invite });
+    } catch (err) {
+      wx.showToast({ title: (err && err.error) || t('error'), icon: 'none' });
+    } finally {
+      this.setData({ loadingInvite: false });
+    }
   },
 
-  /**
-   * Lifecycle function--Called when page unload
-   */
-  onUnload() {
+  openInvite() {
+    const invite = this.data.invite;
+    if (!invite) return;
 
-  },
-
-  /**
-   * Page event handler function--Called when user drop down
-   */
-  onPullDownRefresh() {
-
-  },
-
-  /**
-   * Called when page reach bottom
-   */
-  onReachBottom() {
-
-  },
-
-  /**
-   * Called when user click on the top right corner to share
-   */
-  onShareAppMessage() {
-
+    if (invite.invite_url) {
+      wx.setClipboardData({
+        data: invite.invite_url,
+        success() {
+          wx.showToast({ title: 'Copied invite link', icon: 'none' });
+        }
+      });
+    }
   }
-})
+});

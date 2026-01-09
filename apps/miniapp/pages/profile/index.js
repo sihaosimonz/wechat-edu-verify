@@ -1,66 +1,78 @@
-// pages/profile/index.js
+const { t } = require('../../utils/i18n');
+const { apiRequest } = require('../../utils/api');
+
 Page({
-
-  /**
-   * Page initial data
-   */
   data: {
-
+    status: 'loading',
+    emailDomain: '',
+    validUntil: '',
+    qrToken: '',
+    t,
+    loading: false
   },
 
-  /**
-   * Lifecycle function--Called when page load
-   */
-  onLoad(options) {
-
-  },
-
-  /**
-   * Lifecycle function--Called when page is initially rendered
-   */
-  onReady() {
-
-  },
-
-  /**
-   * Lifecycle function--Called when page show
-   */
   onShow() {
-
+    this.loadStatus();
   },
 
-  /**
-   * Lifecycle function--Called when page hide
-   */
-  onHide() {
+  async loadStatus() {
+    this.setData({ loading: true });
 
+    try {
+      const res = await apiRequest({ url: '/verify/status', method: 'GET' });
+      if (res.status === 'verified') {
+        this.setData({
+          status: 'verified',
+          emailDomain: res.email_domain,
+          validUntil: res.valid_until
+        });
+      } else {
+        this.setData({ status: 'unverified' });
+      }
+    } catch (e) {
+      this.setData({ status: 'unverified' });
+    } finally {
+      this.setData({ loading: false });
+    }
   },
 
-  /**
-   * Lifecycle function--Called when page unload
-   */
-  onUnload() {
-
+  async revokeVerification() {
+    try {
+      await apiRequest({ url: '/profile/revoke', method: 'POST' });
+      wx.showToast({ title: t('revoke_success'), icon: 'none' });
+      this.loadStatus();
+    } catch (e) {
+      wx.showToast({ title: t('error'), icon: 'none' });
+    }
   },
 
-  /**
-   * Page event handler function--Called when user drop down
-   */
-  onPullDownRefresh() {
-
+  async deleteData() {
+    try {
+      await apiRequest({ url: '/profile', method: 'DELETE' });
+      wx.showToast({ title: t('delete_success'), icon: 'none' });
+      wx.removeStorageSync('verification_token');
+      this.loadStatus();
+    } catch (e) {
+      wx.showToast({ title: t('error'), icon: 'none' });
+    }
   },
 
-  /**
-   * Called when page reach bottom
-   */
-  onReachBottom() {
-
+  async generateQrToken() {
+    try {
+      const res = await apiRequest({ url: '/verify/qr-token', method: 'POST' });
+      this.setData({ qrToken: res.token });
+      wx.setClipboardData({
+        data: res.token,
+        success() {
+          wx.showToast({ title: 'Copied', icon: 'none' });
+        }
+      });
+    } catch (e) {
+      wx.showToast({ title: t('error'), icon: 'none' });
+    }
   },
 
-  /**
-   * Called when user click on the top right corner to share
-   */
-  onShareAppMessage() {
-
+  reverify() {
+    wx.navigateTo({ url: '/pages/verify/email' });
   }
-})
+});

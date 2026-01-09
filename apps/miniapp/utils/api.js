@@ -1,29 +1,27 @@
 /**
- * API wrapper for the WeChat mini program. Handles session and verification tokens
- * stored in local storage and automatically includes them in the Authorization header.
+ * API wrapper for the WeChat mini program.
+ *
+ * Why this exists:
+ * - WeChat's wx.request is callback-based.
+ * - This wraps it in a Promise so page code can use async/await.
+ * - It also auto-attaches session_token / verification_token.
  */
 
 const BASE_URL = 'http://localhost:8080';
 
-function getSessionToken(): string | null {
+function getSessionToken() {
   return wx.getStorageSync('session_token') || null;
 }
 
-function getVerificationToken(): string | null {
+function getVerificationToken() {
   return wx.getStorageSync('verification_token') || null;
 }
 
-type ApiRequestOptions = {
-  url: string;
-  method?: WechatMiniprogram.RequestOption['method'];
-  data?: Record<string, any>;
-  headers?: Record<string, string>;
-};
-
-function buildAuthHeader(path: string): string | null {
+function buildAuthHeader(path) {
   const verificationToken = getVerificationToken();
   const sessionToken = getSessionToken();
 
+  // group endpoints require a verification token (stronger credential)
   if (verificationToken && path.startsWith('/groups/')) {
     return `Bearer ${verificationToken}`;
   }
@@ -35,13 +33,13 @@ function buildAuthHeader(path: string): string | null {
   return null;
 }
 
-// converting callback to promise style
-export function apiRequest<T = any>(options: ApiRequestOptions): Promise<T> {
+function apiRequest(options) {
   const url = options.url.startsWith('http') ? options.url : `${BASE_URL}${options.url}`;
   const authHeader = buildAuthHeader(options.url);
-  const headers: Record<string, string> = {
+
+  const headers = {
     'Content-Type': 'application/json',
-    ...options.headers
+    ...(options.headers || {})
   };
 
   if (authHeader && !headers.Authorization && !headers.authorization) {
@@ -54,16 +52,16 @@ export function apiRequest<T = any>(options: ApiRequestOptions): Promise<T> {
       method: options.method || 'GET',
       data: options.data,
       header: headers,
-      success: (resp: WechatMiniprogram.RequestSuccessCallbackResult) => {
+      success: (resp) => {
         if (resp.statusCode >= 200 && resp.statusCode < 300) {
-          resolve(resp.data as T);
+          resolve(resp.data);
           return;
         }
         reject(resp.data || { error: `Request failed with status ${resp.statusCode}` });
       },
-      fail: (err: any) => {
-        reject(err);
-      }
+      fail: (err) => reject(err)
     });
   });
 }
+
+module.exports = { apiRequest };

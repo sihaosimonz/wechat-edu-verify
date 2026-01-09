@@ -1,66 +1,24 @@
-// pages/mod/scan/index.js
+const { t } = require('../../../utils/i18n');
+const { apiRequest } = require('../../../utils/api');
+
 Page({
-
-  /**
-   * Page initial data
-   */
   data: {
-
+    scanResult: null,
+    t
   },
 
-  /**
-   * Lifecycle function--Called when page load
-   */
-  onLoad(options) {
-
-  },
-
-  /**
-   * Lifecycle function--Called when page is initially rendered
-   */
-  onReady() {
-
-  },
-
-  /**
-   * Lifecycle function--Called when page show
-   */
-  onShow() {
-
-  },
-
-  /**
-   * Lifecycle function--Called when page hide
-   */
-  onHide() {
-
-  },
-
-  /**
-   * Lifecycle function--Called when page unload
-   */
-  onUnload() {
-
-  },
-
-  /**
-   * Page event handler function--Called when user drop down
-   */
-  onPullDownRefresh() {
-
-  },
-
-  /**
-   * Called when page reach bottom
-   */
-  onReachBottom() {
-
-  },
-
-  /**
-   * Called when user click on the top right corner to share
-   */
-  onShareAppMessage() {
-
+  async onScan() {
+    try {
+      const res = await wx.scanCode({ scanType: ['qrCode'] });
+      const token = res.result;
+      const result = await apiRequest({
+        url: '/moderation/verify-scan',
+        method: 'POST',
+        data: { token }
+      });
+      this.setData({ scanResult: result });
+    } catch (e) {
+      wx.showToast({ title: t('error'), icon: 'none' });
+    }
   }
-})
+});

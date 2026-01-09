@@ -1,66 +1,51 @@
-// pages/verify/email/index.js
+const { t } = require('../../../utils/i18n');
+const { apiRequest } = require('../../../utils/api');
+
 Page({
-
-  /**
-   * Page initial data
-   */
   data: {
-
+    email: '',
+    t,
+    sending: false,
+    message: ''
   },
 
-  /**
-   * Lifecycle function--Called when page load
-   */
-  onLoad(options) {
-
+  onEmailInput(e) {
+    this.setData({ email: e.detail.value });
   },
 
-  /**
-   * Lifecycle function--Called when page is initially rendered
-   */
-  onReady() {
+  async sendCode() {
+    const email = (this.data.email || '').trim();
+    if (!email) {
+      wx.showToast({ title: t('email_prompt'), icon: 'none' });
+      return;
+    }
 
-  },
+    this.setData({ sending: true, message: '' });
 
-  /**
-   * Lifecycle function--Called when page show
-   */
-  onShow() {
+    try {
+      // Deduplicate repeated taps within ~60s
+      const idempotencyKey = Math.random().toString(36).substring(2);
 
-  },
+      await apiRequest({
+        url: '/verify/request',
+        method: 'POST',
+        data: { email },
+        headers: {
+          'Idempotency-Key': idempotencyKey
+        }
+      });
 
-  /**
-   * Lifecycle function--Called when page hide
-   */
-  onHide() {
+      wx.setStorageSync('last_email', email);
+      wx.showToast({ title: t('otp_sent_if_eligible'), icon: 'none' });
 
-  },
-
-  /**
-   * Lifecycle function--Called when page unload
-   */
-  onUnload() {
-
-  },
-
-  /**
-   * Page event handler function--Called when user drop down
-   */
-  onPullDownRefresh() {
-
-  },
-
-  /**
-   * Called when page reach bottom
-   */
-  onReachBottom() {
-
-  },
-
-  /**
-   * Called when user click on the top right corner to share
-   */
-  onShareAppMessage() {
-
+      wx.navigateTo({
+        url: '/pages/verify/otp?email=' + encodeURIComponent(email)
+      });
+    } catch (err) {
+      const msg = (err && (err.error || err.message)) || t('error');
+      wx.showToast({ title: msg, icon: 'none' });
+    } finally {
+      this.setData({ sending: false });
+    }
   }
-})
+});
