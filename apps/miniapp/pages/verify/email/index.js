@@ -4,9 +4,13 @@ const { apiRequest } = require('../../../utils/api');
 Page({
   data: {
     email: '',
-    t,
     sending: false,
-    message: ''
+    ui: {
+      email_prompt: t('email_prompt') || 'Enter your school email',
+      send_code: t('send_code') || 'Send Code',
+      otp_sent_if_eligible: t('otp_sent_if_eligible') || 'If eligible, you will receive a code via email.',
+      error: t('error') || 'Something went wrong'
+    }
   },
 
   onEmailInput(e) {
@@ -15,34 +19,32 @@ Page({
 
   async sendCode() {
     const email = (this.data.email || '').trim();
+    console.log('[email] sendCode tapped:', email);
+
     if (!email) {
-      wx.showToast({ title: t('email_prompt'), icon: 'none' });
+      wx.showToast({ title: this.data.ui.email_prompt, icon: 'none' });
       return;
     }
 
-    this.setData({ sending: true, message: '' });
+    this.setData({ sending: true });
 
     try {
-      // Deduplicate repeated taps within ~60s
-      const idempotencyKey = Math.random().toString(36).substring(2);
-
       await apiRequest({
         url: '/verify/request',
         method: 'POST',
         data: { email },
-        headers: {
-          'Idempotency-Key': idempotencyKey
-        }
       });
 
       wx.setStorageSync('last_email', email);
-      wx.showToast({ title: t('otp_sent_if_eligible'), icon: 'none' });
+      wx.showToast({ title: this.data.ui.otp_sent_if_eligible, icon: 'none' });
 
+      // Use full route to avoid routing ambiguity
       wx.navigateTo({
-        url: '/pages/verify/otp?email=' + encodeURIComponent(email)
+        url: '/pages/verify/otp/index?email=' + encodeURIComponent(email),
       });
     } catch (err) {
-      const msg = (err && (err.error || err.message)) || t('error');
+      const msg = (err && (err.error || err.message)) || this.data.ui.error;
+      console.log('[email] sendCode error:', err);
       wx.showToast({ title: msg, icon: 'none' });
     } finally {
       this.setData({ sending: false });
