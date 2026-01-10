@@ -74,3 +74,14 @@ npm start
 4. Import `apps/miniapp` into the WeChat development tools to run the mini program.
 
 > **Note:** The default implementation uses in‑memory stores for simplicity. For production use, configure Redis for rate limiting and idempotency, a relational database for persisting verification records and group data, and a real SMTP/SES provider for email delivery.
+## Editor Setup
+
+- **Extension**: qiu8310.minapp-vscode (recommended version: 2.4.14)
+- **Workspace recommendation**: the repository includes [.vscode/extensions.json](.vscode/extensions.json) to prompt installation for contributors.
+- **Install (local)**: run
+
+```bash
+code --install-extension qiu8310.minapp-vscode
+```
+
+- **Install (helper)**: from the `apps/api` folder you can run `npm run vscode:install-extensions` which executes the same `code` CLI install command (requires VS Code command‑line tools to be available).

@@ -21,6 +21,7 @@ miniprogram_npm/
 Thumbs.db
 .vscode/
 .idea/
+!.vscode/extensions.json
 
 # Misc
 *.log

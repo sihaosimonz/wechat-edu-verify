@@ -5,7 +5,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts"
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "vscode:install-extensions": "code --install-extension qiu8310.minapp-vscode"
   },
   "dependencies": {
     "@fastify/cors": "^8.2.0",
@@ -23,5 +24,9 @@
     "@types/jsonwebtoken": "^9.0.1",
     "@types/nodemailer": "^6.4.21",
     "@types/uuid": "^9.0.0"
+  }
+  ,
+  "vscodeRecommendations": {
+    "qiu8310.minapp-vscode": "2.4.14"
   }
 }
