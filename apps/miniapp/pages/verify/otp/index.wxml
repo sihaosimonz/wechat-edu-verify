@@ -1,5 +1,5 @@
 <view class="container">
-  <view class="info">{{t('code_prompt')}}</view>
-  <input class="input" type="number" placeholder="{{t('code_prompt')}}" value="{{otp}}" bindinput="onOtpInput" />
-  <button type="primary" loading="{{verifying}}" bindtap="verifyCode">{{t('verify')}}</button>
+  <view class="info">{{ui.code_prompt}}</view>
+  <input class="input" type="number" placeholder="{{ui.code_prompt}}" value="{{otp}}" bindinput="onOtpInput" />
+  <button type="primary" loading="{{verifying}}" bindtap="verifyCode">{{ui.verify}}</button>
 </view>
