@@ -22,21 +22,22 @@ Page({
     console.log('[email] sendCode tapped:', email);
 
     if (!email) {
-      wx.showToast({ title: this.data.ui.email_prompt, icon: 'none' });
+      wx.showToast({ title: this.data.ui.email_prompt, icon: 'none', duration: 4000 });
       return;
     }
 
     this.setData({ sending: true });
 
     try {
-      await apiRequest({
+      const res = await apiRequest({
         url: '/verify/request',
         method: 'POST',
         data: { email },
       });
 
       wx.setStorageSync('last_email', email);
-      wx.showToast({ title: this.data.ui.otp_sent_if_eligible, icon: 'none' });
+      const msg = (res && res.message) || this.data.ui.otp_sent_if_eligible;
+      wx.showToast({ title: msg, icon: 'none', duration: 2000 });
 
       // Use full route to avoid routing ambiguity
       wx.navigateTo({
@@ -45,7 +46,7 @@ Page({
     } catch (err) {
       const msg = (err && (err.error || err.message)) || this.data.ui.error;
       console.log('[email] sendCode error:', err);
-      wx.showToast({ title: msg, icon: 'none' });
+      wx.showToast({ title: msg, icon: 'none', duration: 2000 });
     } finally {
       this.setData({ sending: false });
     }

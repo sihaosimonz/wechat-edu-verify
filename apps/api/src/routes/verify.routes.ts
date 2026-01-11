@@ -61,9 +61,9 @@ export function registerVerifyRoutes(app: FastifyInstance) {
     // send OTPs to addresses whose domain matches one of the allowed patterns.
     const allowed = (process.env.ALLOWED_DOMAINS || '*.edu').split(',').map((d) => d.trim()).filter(Boolean);
     if (!isEmailDomainAllowed(email, allowed)) {
-      // Domain not allowed. Respond with generic 202 to avoid enumeration but do not send.
+      // Domain not allowed. Return a specific message so the client can inform the user.
       metrics.otpSendFailedTotal.inc();
-      reply.code(202).send({ message: t('otp.sent_if_eligible') });
+      reply.code(400).send({ error: t('otp.not_school_email') });
       return;
     }
     // Generate OTP and store hashed version

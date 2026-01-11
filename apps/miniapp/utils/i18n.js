@@ -29,7 +29,8 @@ const messages = {
     error: 'Error',
 
     otp_sent_if_eligible: 'If eligible, you will receive a code via email.',
-    'otp.invalid_or_expired': 'Invalid or expired code'
+    'otp.invalid_or_expired': 'Invalid or expired code',
+    'otp.not_school_email': 'Email entered is not a school email'
   },
   zh: {
     welcome: '欢迎使用验证系统',
@@ -54,7 +55,8 @@ const messages = {
     error: '出错了',
 
     otp_sent_if_eligible: '如果符合条件，您将收到一封包含验证码的邮件。',
-    'otp.invalid_or_expired': '验证码无效或已过期'
+    'otp.invalid_or_expired': '验证码无效或已过期',
+    'otp.not_school_email': '电邮地址非学校邮箱'
   }
 };
 
