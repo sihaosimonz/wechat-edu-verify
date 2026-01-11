@@ -22,7 +22,7 @@ The API exposes endpoints for verifying student email addresses via one‑time c
 * **Rate limiting** with per‑email, per‑user, and per‑IP counters, exponential backoff, and soft lockouts.
 * **Idempotency keys** on the OTP request endpoint to deduplicate repeated submissions.
 * **OTP generation** (six digits), hashing (Argon2id), constant‑time verification, single‑use semantics, and time‑to‑live of ten minutes.
-* **Verification store** that records the email domain, verification timestamp, validity window (default 120 days), and JWT identifier (jti).
+* **Verification store** that records the email domain, verification timestamp, validity window (default 120 days), and JWT identifier (jti). The default validity window is set by `VERIFY_TERM_DAYS` in `apps/api/src/routes/verify.routes.ts`.
 * **JWT issuance and validation** using HS256 tokens, with standard claims (`iss`, `aud`, `nbf`, `exp`, `jti`) and revocation support.
 * **Revoke and delete** endpoints to allow users to revoke a verification or delete their data.
 * **Group management** routes to create groups, set verification policies, upload invites, and gate access using verification tokens.

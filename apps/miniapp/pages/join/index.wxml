@@ -1,25 +1,25 @@
 <view class="container">
   <block wx:if="{{status === 'loading'}}">
-    <text>{{t('loading')}}</text>
+    <text>{{ui.loading}}</text>
   </block>
   <block wx:elif="{{status === 'unverified'}}">
-    <text>{{t('not_verified')}}</text>
-    <button type="primary" bindtap="checkStatus">{{t('reverify')}}</button>
+    <text>{{ui.not_verified}}</text>
+    <button type="primary" bindtap="checkStatus">{{ui.reverify}}</button>
   </block>
   <block wx:elif="{{status === 'verified'}}">
     <view class="verified">
-      <text>{{t('verified_until')}}: {{validUntil}}</text>
+      <text>{{ui.verified_until}}: {{validUntil}}</text>
     </view>
     <view class="form">
-      <input class="input" type="text" placeholder="{{t('enter_group_id')}}" value="{{groupId}}" bindinput="onGroupIdInput" />
-      <button type="primary" loading="{{loadingInvite}}" bindtap="fetchInvite">{{t('fetch_invite')}}</button>
+      <input class="input" type="text" placeholder="{{ui.enter_group_id}}" value="{{groupId}}" bindinput="onGroupIdInput" />
+      <button type="primary" loading="{{loadingInvite}}" bindtap="fetchInvite">{{ui.fetch_invite}}</button>
     </view>
     <block wx:if="{{invite}}">
       <view class="invite">
-        <text>{{t('invite_link')}}:</text>
+        <text>{{ui.invite_link}}:</text>
         <text selectable="true">{{invite.invite_url}}</text>
-        <button size="mini" bindtap="openInvite">Copy</button>
-        <text wx:if="{{invite.qr_media_id}}">QR Media ID: {{invite.qr_media_id}}</text>
+        <button size="mini" bindtap="openInvite">{{ui.copy}}</button>
+        <text wx:if="{{invite.qr_media_id}}">{{ui.qr_media_id}}: {{invite.qr_media_id}}</text>
       </view>
     </block>
   </block>
