@@ -1,26 +1,23 @@
 // upon OTP success, this page shows up
 
 const { t } = require('../../utils/i18n');
-const { apiRequest } = require('../../utils/api');
+const { get, resolveUrl } = require('../../utils/api');
 
 Page({
   data: {
-    groupId: '',
-    invite: null,
     status: 'loading',
-    loadingInvite: false,
+    loading: false,
+    loadingQr: false,
     validUntil: '',
+    qrUrl: '',
+    qrUrlWithCacheBust: '',
     ui: {
       loading: t('loading') || 'Loading...',
       not_verified: t('not_verified') || 'You are not verified yet',
       reverify: t('reverify') || 'Re-verify',
       verified_until: t('verified_until') || 'Verified until',
-      enter_group_id: t('enter_group_id') || 'Enter group ID',
-      fetch_invite: t('fetch_invite') || 'Fetch Invite',
-      invite_link: t('invite_link') || 'Invite Link',
-      copy: t('copy') || 'Copy',
-      copied_invite: t('copied_invite') || 'Copied invite link',
-      qr_media_id: t('qr_media_id') || 'QR Media ID',
+      loading_qr: t('loading_qr') || 'Loading QR...',
+      qr_unavailable: t('qr_unavailable') || 'QR code not available',
       error: t('error') || 'Error'
     }
   },
@@ -30,16 +27,47 @@ Page({
   },
 
   async checkStatus() {
+    this.setData({ loading: true });
     try {
-      const res = await apiRequest({ url: '/verify/status', method: 'GET' });
+      const res = await get('/verify/status');
       if (res.status === 'verified') {
         this.setData({ status: 'verified', validUntil: this.formatValidUntil(res.valid_until) });
+        await this.fetchQr();
       } else {
-        this.setData({ status: 'unverified' });
+        this.setData({ status: 'unverified', qrUrl: '', qrUrlWithCacheBust: '' });
       }
     } catch (e) {
-      this.setData({ status: 'unverified' });
+      this.setData({ status: 'unverified', qrUrl: '', qrUrlWithCacheBust: '' });
+    } finally {
+      this.setData({ loading: false });
     }
+  },
+
+  async fetchQr() {
+    this.setData({ loadingQr: true });
+    try {
+      const res = await get('/groups/qr');
+      const qrUrl = res && res.qrUrl;
+      if (!qrUrl) {
+        this.setData({ qrUrl: '', qrUrlWithCacheBust: '' });
+        return;
+      }
+      this.setData({
+        qrUrl,
+        qrUrlWithCacheBust: this.buildQrUrlWithCacheBust(qrUrl)
+      });
+    } catch (err) {
+      wx.showToast({ title: (err && err.error) || this.data.ui.error, icon: 'none' });
+      this.setData({ qrUrl: '', qrUrlWithCacheBust: '' });
+    } finally {
+      this.setData({ loadingQr: false });
+    }
+  },
+
+  buildQrUrlWithCacheBust(qrUrl) {
+    const fullUrl = resolveUrl(qrUrl);
+    const joiner = fullUrl.includes('?') ? '&' : '?';
+    return `${fullUrl}${joiner}v=${Date.now()}`;
   },
 
   formatValidUntil(value) {
@@ -55,43 +83,7 @@ Page({
     return `${hours}:${minutes}, ${year}-${month}-${day}`;
   },
 
-  onGroupIdInput(e) {
-    this.setData({ groupId: e.detail.value });
-  },
-
-  async fetchInvite() {
-    const groupId = (this.data.groupId || '').trim();
-    if (!groupId) {
-      wx.showToast({ title: this.data.ui.enter_group_id, icon: 'none' });
-      return;
-    }
-
-    this.setData({ loadingInvite: true });
-
-    try {
-      const invite = await apiRequest({
-        url: `/groups/${groupId}/invite`,
-        method: 'GET'
-      });
-      this.setData({ invite });
-    } catch (err) {
-      wx.showToast({ title: (err && err.error) || this.data.ui.error, icon: 'none' });
-    } finally {
-      this.setData({ loadingInvite: false });
-    }
-  },
-
-  openInvite() {
-    const invite = this.data.invite;
-    if (!invite) return;
-
-    if (invite.invite_url) {
-      wx.setClipboardData({
-        data: invite.invite_url,
-        success: () => {
-          wx.showToast({ title: this.data.ui.copied_invite, icon: 'none' });
-        }
-      });
-    }
+  reverify() {
+    wx.navigateTo({ url: '/pages/verify/email' });
   }
 });

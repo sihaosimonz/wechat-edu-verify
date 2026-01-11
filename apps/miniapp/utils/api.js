@@ -33,8 +33,12 @@ function buildAuthHeader(path) {
   return null;
 }
 
+function resolveUrl(url) {
+  return url.startsWith('http') ? url : `${BASE_URL}${url}`;
+}
+
 function apiRequest(options) {
-  const url = options.url.startsWith('http') ? options.url : `${BASE_URL}${options.url}`;
+  const url = resolveUrl(options.url);
   const authHeader = buildAuthHeader(options.url);
 
   const headers = {
@@ -64,4 +68,8 @@ function apiRequest(options) {
   });
 }
 
-module.exports = { apiRequest };
+function get(url, options = {}) {
+  return apiRequest({ ...(options || {}), url, method: 'GET' });
+}
+
+module.exports = { apiRequest, get, resolveUrl };

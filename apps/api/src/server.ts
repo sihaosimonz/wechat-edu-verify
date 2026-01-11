@@ -1,8 +1,11 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import fastifyStatic from '@fastify/static';
+import path from 'path';
 import { registerAuthRoutes } from './routes/auth.routes';
 import { registerVerifyRoutes } from './routes/verify.routes';
 import { registerGroupRoutes } from './routes/groups.routes';
+import { registerGroupQrRoutes } from './routes/groups';
 import { registerModerationRoutes } from './routes/moderation.routes';
 import { registerWebhookRoutes } from './routes/webhooks.routes';
 import { registerMetricsRoutes } from './routes/metrics.routes';
@@ -21,6 +24,11 @@ export async function buildServer() {
     }
   });
 
+  await app.register(fastifyStatic, {
+    root: path.join(__dirname, '../public'),
+    prefix: '/'
+  });
+
   // Health check endpoint.
   app.get('/healthz', async () => ({ status: 'ok' }));
 
@@ -28,6 +36,7 @@ export async function buildServer() {
   registerAuthRoutes(app);
   registerVerifyRoutes(app);
   registerGroupRoutes(app);
+  registerGroupQrRoutes(app);
   registerModerationRoutes(app);
   registerWebhookRoutes(app);
   registerMetricsRoutes(app);

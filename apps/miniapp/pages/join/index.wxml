@@ -1,26 +1,23 @@
 <view class="container">
-  <block wx:if="{{status === 'loading'}}">
+  <block wx:if="{{status === 'loading' || loading}}">
     <text>{{ui.loading}}</text>
   </block>
   <block wx:elif="{{status === 'unverified'}}">
     <text>{{ui.not_verified}}</text>
-    <button type="primary" bindtap="checkStatus">{{ui.reverify}}</button>
+    <button type="primary" bindtap="reverify">{{ui.reverify}}</button>
   </block>
   <block wx:elif="{{status === 'verified'}}">
     <view class="verified">
       <text>{{ui.verified_until}}: {{validUntil}}</text>
     </view>
-    <view class="form">
-      <input class="input" type="text" placeholder="{{ui.enter_group_id}}" value="{{groupId}}" bindinput="onGroupIdInput" />
-      <button type="primary" loading="{{loadingInvite}}" bindtap="fetchInvite">{{ui.fetch_invite}}</button>
-    </view>
-    <block wx:if="{{invite}}">
-      <view class="invite">
-        <text>{{ui.invite_link}}:</text>
-        <text selectable="true">{{invite.invite_url}}</text>
-        <button size="mini" bindtap="openInvite">{{ui.copy}}</button>
-        <text wx:if="{{invite.qr_media_id}}">{{ui.qr_media_id}}: {{invite.qr_media_id}}</text>
-      </view>
+    <block wx:if="{{loadingQr}}">
+      <text>{{ui.loading_qr}}</text>
+    </block>
+    <block wx:elif="{{qrUrlWithCacheBust}}">
+      <image class="qr" src="{{qrUrlWithCacheBust}}" mode="widthFix" />
+    </block>
+    <block wx:else>
+      <text>{{ui.qr_unavailable}}</text>
     </block>
   </block>
 </view>
