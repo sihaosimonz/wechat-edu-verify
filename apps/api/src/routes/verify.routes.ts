@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { authSession } from '../middlewares/authSession';
 import { authBearer } from '../middlewares/authBearer';

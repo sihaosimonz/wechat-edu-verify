@@ -23,11 +23,12 @@ function createTransporter() {
       auth: { user, pass }
     });
   }
-  // Dummy transporter: prints emails to the console.
+  // Dummy transporter: prints emails to the console; 
+  // console log instead of sending email for now
   return {
     async sendMail(options: EmailOptions) {
       // eslint-disable-next-line no-console
-      console.log(`Sending email to ${options.to}: ${options.subject}\n${options.text}`);
+      console.log(`[TEST ONLY] Sending email to ${options.to}: ${options.subject}\n${options.text}`);
     }
   } as any;
 }

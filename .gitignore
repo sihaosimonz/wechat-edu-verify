@@ -9,7 +9,6 @@ pnpm-debug.log*
 
 # Environment & secrets
 .env
-.env.*
 apps/api/env/.env
 apps/jobs/env/.env
 
